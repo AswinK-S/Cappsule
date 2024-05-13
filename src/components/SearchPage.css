@@ -1,0 +1,36 @@
+.search-container{
+    position: relative;
+    width: 70%;
+}
+
+.search-input{
+    position: relative;
+    width: 100%;
+    padding: 15px 15px 15px 90px;
+    box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.1); 
+    background-image: url('/search.png');
+    background-repeat:no-repeat;
+    background-position:5% center;
+    background-size:25px
+}
+
+
+.search-img{
+    height:30px;
+}
+.search-text{
+    position: absolute;
+    right:5%;
+    top:26%;
+    color:#2A527A;
+    font-weight: 600;
+}
+
+.hr-line{
+    width: 75%;
+    height: 2px;
+}
+
+.medicine-container {
+    height: 65vh; 
+}
