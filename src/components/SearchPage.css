@@ -8,10 +8,17 @@
     width: 100%;
     padding: 15px 15px 15px 90px;
     box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.1); 
-    background-image: url('/search.png');
     background-repeat:no-repeat;
     background-position:5% center;
     background-size:25px
+}
+
+.search-icon{
+    background-image:url('/search.png');
+}
+
+.reverse-icon{
+    background-image:('/blckBckArw.png');
 }
 
 

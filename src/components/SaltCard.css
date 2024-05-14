@@ -1,0 +1,7 @@
+.card-container{
+    width: 70%;
+    height:auto;
+    background: linear-gradient(275.41deg, #D5E7E6 -27.33%, #FFFFFF 46.85%);
+    box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.1); 
+    border-radius:10px;
+}

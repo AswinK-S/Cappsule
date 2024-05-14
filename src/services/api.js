@@ -1,5 +1,7 @@
 import axios from "axios";
 
-axios.create({
+const axiosApi =axios.create({
     baseURL:'https://backend.cappsule.co.in/', withCredentials:true
 })
+
+export {axiosApi}
