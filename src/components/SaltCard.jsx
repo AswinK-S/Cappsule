@@ -1,3 +1,4 @@
+import React from 'react';
 import PropTypes from 'prop-types';
 import './SaltCard.css';
 import { useState, useEffect } from 'react';
@@ -9,18 +10,31 @@ const SaltCard = ({ saltSuggetion }) => {
   useEffect(() => {
     if (saltSuggetion?.length > 0) {
       const initialOptions = saltSuggetion.reduce((acc, item, index) => {
-        const firstForm = Object.keys(item.salt_forms_json)[0];
-        const firstStrength = Object.keys(item.salt_forms_json[firstForm])[0];
-        acc[index] = {
-          selectedForm: firstForm,
-          selectedStrength: firstStrength,
-          selectedPacking: null,
-        };
+        const saltFormsJson = item.salt_forms_json;
+        const hasFormEntries = Object.keys(saltFormsJson).length > 0;
+
+        if (hasFormEntries) {
+          const firstForm = Object.keys(saltFormsJson)[0];
+          const firstStrength = Object.keys(saltFormsJson[firstForm])[0];
+          acc[index] = {
+            selectedForm: firstForm,
+            selectedStrength: firstStrength,
+            selectedPacking: null,
+          };
+        } else {
+          acc[index] = {
+            selectedForm: null,
+            selectedStrength: null,
+            selectedPacking: null,
+          };
+        }
+
         return acc;
       }, {});
       setSelectedOptions(initialOptions);
     }
   }, [saltSuggetion]);
+
 
   const toggleShowMore = (cardIndex, type) => {
     setShowMore((prevState) => ({
@@ -31,6 +45,8 @@ const SaltCard = ({ saltSuggetion }) => {
       },
     }));
   };
+
+
 
   const handleOptionClick = (cardIndex, type, value) => {
     setSelectedOptions((prevState) => ({
@@ -46,7 +62,7 @@ const SaltCard = ({ saltSuggetion }) => {
 
   const isOptionAvailable = (option) => {
     if (Array.isArray(option) && option.length > 0) {
-      return option.some((item) => item.selling_price !== null);
+      return option.some((item) => item?.selling_price !== null);
     }
     return false;
   };
@@ -55,83 +71,148 @@ const SaltCard = ({ saltSuggetion }) => {
     return (showMore[cardIndex] || {})[type] || false;
   };
 
+  //get the lowest price
+  const getLowestPrice = (packings) => {
+    let lowestPrice = null;
+
+    if (packings && typeof packings === 'object' && packings !== null) {
+      const allProducts = Object.entries(packings)
+        .flatMap(([id, products]) => {
+          if (Array.isArray(products)) {
+            return products.filter((product) => product?.selling_price !== null);
+          } else if (products === null) {
+            return [];
+          } else {
+            console.warn(`Unexpected value for productIds: ${id}`, products);
+            return [];
+          }
+        });
+
+      if (allProducts.length > 0) {
+        lowestPrice = Math.min(...allProducts.map((product) => product?.selling_price));
+      } else {
+        lowestPrice = 'NaN';
+      }
+    } else {
+      lowestPrice = 'NaN';
+    }
+
+    return lowestPrice;
+  };
+
+  console.log('salt sgg-->', saltSuggetion);
   return (
     <>
       {saltSuggetion?.length ? (
         saltSuggetion?.map((item, index) => (
           <div key={index} className="card-container py-5 px-10 flex justify-between">
             {/* medicine details list */}
-            <div>
+            <div className='w-auto'>
+              {/* Form */}
               <div className="flex mb-2 mt-2">
                 <p className="text-md w-20">Form : &nbsp;</p>
                 <div className="grid grid-cols-2 gap-2">
                   {Object.entries(item.salt_forms_json).map(([form, strengths], formIndex) => (
-                    <button
-                      key={form}
-                      className={`border rounded-md px-2 ${
-                        isOptionAvailable(strengths) ? 'border-[#112D31]' : 'border-gray-300'
-                      } ${selectedOptions[index]?.selectedForm === form ? 'bg-blue-100' : ''}`}
-                      onClick={() => handleOptionClick(index, 'form', form)}
-                    >
-                      {form}
-                    </button>
+                    <React.Fragment key={form}>
+                      {(formIndex < 4 || isShowMore(index, 'form')) ? (
+                        <button
+                          className={`form-button border rounded-md px-2 ${isOptionAvailable(strengths) ? 'border-[#112D31]' : ''
+                            } ${selectedOptions[index]?.selectedForm === form
+                              ? 'border-2 border-[#112D31] shadow-[0_0_10px_rgba(17,45,49,0.5)]'
+                              : ''
+                            }`}
+                          onClick={() => handleOptionClick(index, 'form', form)}
+                        >
+                          {form}
+                        </button>
+                      ) : null}
+                    </React.Fragment>
                   ))}
-                  {Object.entries(item.salt_forms_json).length > 2 && (
-                    <button
-                      className="text-blue-500"
-                      onClick={() => toggleShowMore(index, 'form')}
-                    >
-                      {isShowMore(index, 'form') ? 'Hide' : 'More'}
-                    </button>
+                  {Object.entries(item.salt_forms_json).length > 4 && (
+                    <div className="flex justify-center col-span-2">
+                      <button className="text-[#204772] font-bold" onClick={() => toggleShowMore(index, 'form')}>
+                        {isShowMore(index, 'form') ? 'Hide' : 'More..'}
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
+
+              {/* Strength */}
               <div className="flex mb-2 mt-2">
                 <p className="text-md w-20">Strength : &nbsp;</p>
                 <div className="grid grid-cols-2 gap-2">
-                  {Object.entries(item.salt_forms_json[selectedOptions[index].selectedForm] || {}).map(([strength, packings], strengthIndex) => (
-                    <button
-                      key={strength}
-                      className={`border rounded-md px-2 ${
-                        isOptionAvailable(packings) ? 'border-[#112D31]' : 'border-gray-300'
-                      } ${selectedOptions[index]?.selectedStrength === strength ? 'bg-blue-100' : ''}`}
-                      onClick={() => handleOptionClick(index, 'strength', strength)}
-                    >
-                      {strength}
-                    </button>
-                  ))}
-                  {Object.entries(item.salt_forms_json[selectedOptions[index].selectedForm] || {}).length > 2 && (
-                    <button
-                      className="text-blue-500"
-                      onClick={() => toggleShowMore(index, 'strength')}
-                    >
-                      {isShowMore(index, 'strength') ? 'Hide' : 'More'}
-                    </button>
+                  {selectedOptions[index]?.selectedForm ? (
+                    Object.entries(item.salt_forms_json[selectedOptions[index].selectedForm] || {}).map(
+                      ([strength, packings], strengthIndex) => (
+                        <React.Fragment key={strength}>
+                          {(strengthIndex < 4 || isShowMore(index, 'strength')) ? (
+                            <button
+                              className={`strength-button border rounded-md px-2 ${isOptionAvailable(packings) ? 'border-[#112D31]' : ''
+                                } ${selectedOptions[index]?.selectedStrength === strength
+                                  ? 'border-2 border-[#112D31] shadow-[0_0_10px_rgba(17,45,49,0.5)]'
+                                  : ''
+                                }`}
+                              onClick={() => handleOptionClick(index, 'strength', strength)}
+                            >
+                              {strength}
+                            </button>
+                          ) : null}
+                        </React.Fragment>
+                      )
+                    )
+                  ) : (
+                    <span>No strengths available</span>
                   )}
+                  {selectedOptions[index]?.selectedForm &&
+                    Object.entries(item.salt_forms_json[selectedOptions[index].selectedForm] || {}).length > 4 && (
+                      <div className="flex justify-center col-span-2">
+                        <button className="text-[#204772] font-bold" onClick={() => toggleShowMore(index, 'strength')}>
+                          {isShowMore(index, 'strength') ? 'Hide' : 'More..'}
+                        </button>
+                      </div>
+                    )}
                 </div>
               </div>
+
+              {/* Packing */}
               <div className="flex mb-2 mt-2">
-                <p className="text-md w-20">Packing : &nbsp;</p>
+                <p className="text-md w-20">Packaging : &nbsp;</p>
                 <div className="grid grid-cols-2 gap-2">
-                  {Object.entries(item.salt_forms_json[selectedOptions[index].selectedForm]?.[selectedOptions[index].selectedStrength] || {}).map(([packing, products], packingIndex) => (
-                    <button
-                      key={packing}
-                      className={`border rounded-md px-2 ${
-                        isOptionAvailable(products) ? 'border-[#112D31]' : 'border-gray-300'
-                      } ${selectedOptions[index]?.selectedPacking === packing ? 'bg-blue-100' : ''}`}
-                      onClick={() => handleOptionClick(index, 'packing', packing)}
-                    >
-                      {packing}
-                    </button>
-                  ))}
-                  {Object.entries(item.salt_forms_json[selectedOptions[index].selectedForm]?.[selectedOptions[index].selectedStrength] || {}).length > 2 && (
-                    <button
-                      className="text-blue-500"
-                      onClick={() => toggleShowMore(index, 'packing')}
-                    >
-                      {isShowMore(index, 'packing') ? 'Hide' : 'More'}
-                    </button>
+                  {selectedOptions[index]?.selectedForm && selectedOptions[index]?.selectedStrength ? (
+                    Object.entries(
+                      item.salt_forms_json[selectedOptions[index].selectedForm]?.[
+                      selectedOptions[index].selectedStrength
+                      ] || {}
+                    ).map(([packing, productIds], packingIndex) => (
+                      <React.Fragment key={packing}>
+                        {packingIndex < 4 ? (
+                          <button
+                            className={`border rounded-md px-2 ${isOptionAvailable(productIds) ? 'border-[#112D31]' : ''
+                              } ${selectedOptions[index]?.selectedPacking === packing ? 'bg-blue-100' : ''}`}
+                            onClick={() => handleOptionClick(index, 'packing', packing)}
+                          >
+                            {packing}
+                          </button>
+                        ) : null}
+                      </React.Fragment>
+                    ))
+                  ) : (
+                    <span>No packings available</span>
                   )}
+                  {selectedOptions[index]?.selectedForm &&
+                    selectedOptions[index]?.selectedStrength &&
+                    Object.entries(
+                      item.salt_forms_json[selectedOptions[index].selectedForm]?.[
+                      selectedOptions[index].selectedStrength
+                      ] || {}
+                    ).length > 4 ? (
+                    <div className="flex justify-center col-span-2">
+                      <button className="text-[#204772] font-bold" onClick={() => toggleShowMore(index, 'packing')}>
+                        {isShowMore(index, 'packing') ? 'Hide' : 'More..'}
+                      </button>
+                    </div>
+                  ) : null}
                 </div>
               </div>
             </div>
@@ -144,11 +225,32 @@ const SaltCard = ({ saltSuggetion }) => {
 
             {/* medicine price */}
             <div className="flex flex-col justify-center">
-              {selectedOptions[index]?.selectedForm && selectedOptions[index]?.selectedStrength && selectedOptions[index]?.selectedPacking && (
-                <span className="text-[#112D31] font-bold">
-                  ₹{/* Calculate and display the lowest price */}
-                </span>
-              )}
+              {selectedOptions[index]?.selectedForm && selectedOptions[index]?.selectedStrength ? (
+                <>
+                  {getLowestPrice(
+                    item.salt_forms_json[selectedOptions[index].selectedForm]?.[
+                    selectedOptions[index]?.selectedStrength
+                    ]?.[selectedOptions[index]?.selectedPacking]
+                  ) !== null && getLowestPrice(
+                    item.salt_forms_json[selectedOptions[index].selectedForm]?.[
+                    selectedOptions[index]?.selectedStrength
+                    ]?.[selectedOptions[index]?.selectedPacking]
+                  ) !=='NaN'  ? (
+                    <span className="text-[#112D31] font-bold">
+                      From₹
+                      {getLowestPrice(
+                        item.salt_forms_json[selectedOptions[index]?.selectedForm]?.[
+                        selectedOptions[index]?.selectedStrength
+                        ]?.[selectedOptions[index]?.selectedPacking]
+                      )}
+                    </span>
+                  ) : (
+                    <div className="border border-gray-300 p-2 rounded-md">
+                      <span>No stores selling this product near you</span>
+                    </div>
+                  )}
+                </>
+              ) : null}
             </div>
           </div>
         ))
@@ -157,6 +259,8 @@ const SaltCard = ({ saltSuggetion }) => {
       )}
     </>
   );
+
+
 };
 
 SaltCard.propTypes = {
