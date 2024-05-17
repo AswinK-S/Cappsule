@@ -107,18 +107,18 @@ const SaltCard = ({ saltSuggetion }) => {
         saltSuggetion?.map((item, index) => (
           <div key={index} className="card-container py-5 px-10 flex justify-between">
             {/* medicine details list */}
-            <div className='w-auto'>
+            <div className= ' flex flex-col w-auto'>
               {/* Form */}
-              <div className="flex mb-2 mt-2">
+              <div className="flex gap-2 mb-2 mt-2 ">
                 <p className="text-md w-20">Form : &nbsp;</p>
                 <div className="grid grid-cols-2 gap-2">
                   {Object.entries(item.salt_forms_json).map(([form, strengths], formIndex) => (
                     <React.Fragment key={form}>
                       {(formIndex < 4 || isShowMore(index, 'form')) ? (
                         <button
-                          className={`form-button border rounded-md px-2 ${isOptionAvailable(strengths) ? 'border-[#112D31]' : ''
+                          className={`form-button border rounded-md px-2 ${isOptionAvailable(strengths) ? 'border-[#183b41]' : ''
                             } ${selectedOptions[index]?.selectedForm === form
-                              ? 'border-2 border-[#112D31] shadow-[0_0_10px_rgba(17,45,49,0.5)]'
+                              ? 'border-2 border-[#1c454c] shadow-[0_0_10px_rgba(17,45,49,0.6)]'
                               : ''
                             }`}
                           onClick={() => handleOptionClick(index, 'form', form)}
@@ -139,7 +139,7 @@ const SaltCard = ({ saltSuggetion }) => {
               </div>
 
               {/* Strength */}
-              <div className="flex mb-2 mt-2">
+              <div className="flex gap-2 mb-2 mt-2">
                 <p className="text-md w-20">Strength : &nbsp;</p>
                 <div className="grid grid-cols-2 gap-2">
                   {selectedOptions[index]?.selectedForm ? (
@@ -176,30 +176,35 @@ const SaltCard = ({ saltSuggetion }) => {
               </div>
 
               {/* Packing */}
-              <div className="flex mb-2 mt-2">
+              <div className="flex  gap-2 mb-2 mt-2">
                 <p className="text-md w-20">Packaging : &nbsp;</p>
                 <div className="grid grid-cols-2 gap-2">
-                  {selectedOptions[index]?.selectedForm && selectedOptions[index]?.selectedStrength ? (
-                    Object.entries(
-                      item.salt_forms_json[selectedOptions[index].selectedForm]?.[
-                      selectedOptions[index].selectedStrength
-                      ] || {}
-                    ).map(([packing, productIds], packingIndex) => (
-                      <React.Fragment key={packing}>
-                        {packingIndex < 4 ? (
-                          <button
-                            className={`border rounded-md px-2 ${isOptionAvailable(productIds) ? 'border-[#112D31]' : ''
-                              } ${selectedOptions[index]?.selectedPacking === packing ? 'bg-blue-100' : ''}`}
-                            onClick={() => handleOptionClick(index, 'packing', packing)}
-                          >
-                            {packing}
-                          </button>
-                        ) : null}
-                      </React.Fragment>
-                    ))
-                  ) : (
-                    <span>No packings available</span>
-                  )}
+                  {
+                    selectedOptions[index]?.selectedForm && selectedOptions[index]?.selectedStrength
+                      ? Object.entries(
+                        item.salt_forms_json[selectedOptions[index].selectedForm]?.[
+                        selectedOptions[index].selectedStrength
+                        ] || {}
+                      ).map(([packing, productIds], packingIndex) => (
+                        <React.Fragment key={packing}>
+                          {(packingIndex < 4 || isShowMore(index, 'packing')) ? ( // Show all packings if "More.." is clicked
+                            <button
+                              className={`packing-btn border rounded-md ${isOptionAvailable(productIds) ? 'border-[#112D31] px-2 py-0' : 'px-2 py-0'
+                                } ${selectedOptions[index]?.selectedPacking === packing
+                                  ? 'border-2 px-2 py-0 border-[#112D31] shadow-[0_0_10px_rgba(17,45,49,0.5)]'
+                                  : ''
+                                }`}
+                              onClick={() => handleOptionClick(index, 'packing', packing)}
+                            >
+                              {packing}
+                            </button>
+                          ) : null}
+                        </React.Fragment>
+                      ))
+                      : (
+                        <span>No packings available</span>
+                      )
+                  }
                   {selectedOptions[index]?.selectedForm &&
                     selectedOptions[index]?.selectedStrength &&
                     Object.entries(
@@ -207,7 +212,7 @@ const SaltCard = ({ saltSuggetion }) => {
                       selectedOptions[index].selectedStrength
                       ] || {}
                     ).length > 4 ? (
-                    <div className="flex justify-center col-span-2">
+                    <div className="flex justify-end col-span-2">
                       <button className="text-[#204772] font-bold" onClick={() => toggleShowMore(index, 'packing')}>
                         {isShowMore(index, 'packing') ? 'Hide' : 'More..'}
                       </button>
@@ -235,7 +240,7 @@ const SaltCard = ({ saltSuggetion }) => {
                     item.salt_forms_json[selectedOptions[index].selectedForm]?.[
                     selectedOptions[index]?.selectedStrength
                     ]?.[selectedOptions[index]?.selectedPacking]
-                  ) !=='NaN'  ? (
+                  ) !== 'NaN' ? (
                     <span className="text-[#112D31] font-bold">
                       From₹
                       {getLowestPrice(
