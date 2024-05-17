@@ -105,9 +105,9 @@ const SaltCard = ({ saltSuggetion }) => {
     <>
       {saltSuggetion?.length ? (
         saltSuggetion?.map((item, index) => (
-          <div key={index} className="card-container py-5 px-10 flex justify-between">
+          <div key={index} className="card-container py-5 gap-10 px-10 flex justify-between">
             {/* medicine details list */}
-            <div className= ' flex flex-col w-auto'>
+            <div className=' flex flex-col w-auto'>
               {/* Form */}
               <div className="flex gap-2 mb-2 mt-2 ">
                 <p className="text-md w-20">Form : &nbsp;</p>
@@ -139,8 +139,8 @@ const SaltCard = ({ saltSuggetion }) => {
               </div>
 
               {/* Strength */}
-              <div className="flex gap-2 mb-2 mt-2">
-                <p className="text-md w-20">Strength : &nbsp;</p>
+              <div className="flex  gap-2 mb-2 mt-2">
+                <p className="text-md w-20">Strength&nbsp;: &nbsp;</p>
                 <div className="grid grid-cols-2 gap-2">
                   {selectedOptions[index]?.selectedForm ? (
                     Object.entries(item.salt_forms_json[selectedOptions[index].selectedForm] || {}).map(
@@ -148,7 +148,7 @@ const SaltCard = ({ saltSuggetion }) => {
                         <React.Fragment key={strength}>
                           {(strengthIndex < 4 || isShowMore(index, 'strength')) ? (
                             <button
-                              className={`strength-button border rounded-md px-2 ${isOptionAvailable(packings) ? 'border-[#112D31]' : ''
+                              className={`strength-button border rounded-md px-2 overflow-hidden whitespace-nowrap text-ellipsis ${isOptionAvailable(packings) ? 'border-[#112D31]' : ''
                                 } ${selectedOptions[index]?.selectedStrength === strength
                                   ? 'border-2 border-[#112D31] shadow-[0_0_10px_rgba(17,45,49,0.5)]'
                                   : ''
@@ -177,7 +177,7 @@ const SaltCard = ({ saltSuggetion }) => {
 
               {/* Packing */}
               <div className="flex  gap-2 mb-2 mt-2">
-                <p className="text-md w-20">Packaging : &nbsp;</p>
+                <p className="text-md w-20">Packing : &nbsp;</p>
                 <div className="grid grid-cols-2 gap-2">
                   {
                     selectedOptions[index]?.selectedForm && selectedOptions[index]?.selectedStrength
@@ -189,7 +189,7 @@ const SaltCard = ({ saltSuggetion }) => {
                         <React.Fragment key={packing}>
                           {(packingIndex < 4 || isShowMore(index, 'packing')) ? ( // Show all packings if "More.." is clicked
                             <button
-                              className={`packing-btn border rounded-md ${isOptionAvailable(productIds) ? 'border-[#112D31] px-2 py-0' : 'px-2 py-0'
+                              className={`packing-btn border rounded-md overflow-hidden text-ellipsis whitespace-nowrap ${isOptionAvailable(productIds) ? 'border-[#112D31] px-2 py-0' : 'px-2 py-0'
                                 } ${selectedOptions[index]?.selectedPacking === packing
                                   ? 'border-2 px-2 py-0 border-[#112D31] shadow-[0_0_10px_rgba(17,45,49,0.5)]'
                                   : ''
@@ -225,7 +225,9 @@ const SaltCard = ({ saltSuggetion }) => {
             {/* medicine name & detail */}
             <div className="flex flex-col justify-center">
               <h4 className="font-bold">{item.salt}</h4>
-              <p className="text-[#2A527A]">details</p>
+              <p className="text-[#2A527A] overflow-hidden whitespace-nowrap text-ellipsis">
+                {selectedOptions[index]?.selectedForm } | {selectedOptions[index]?.selectedStrength} |{selectedOptions[index]?.selectedPacking}
+              </p>
             </div>
 
             {/* medicine price */}

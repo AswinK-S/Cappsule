@@ -2,6 +2,7 @@ import './SearchPage.css'
 import { axiosApi } from '../services/api'
 import { useEffect, useState } from 'react'
 import SaltCard from './SaltCard'
+import arrow from '../../public/blckBckArw.png'
 
 const SearchPage = () => {
     const [searchTerm, setSeachTerm] = useState('')
@@ -33,9 +34,14 @@ const SearchPage = () => {
         searchInput.classList.toggle('reverse-icon');
     };
 
+    const handleErase = () => {
+        setSeachTerm('')
+        setSaltSuggetion([])
+    }
+
     useEffect(() => {
         const searchInput = document.querySelector('.search-input')
-         document.querySelector('.search-icon')
+        document.querySelector('.search-icon')
 
         const handleKeyDown = async (event) => {
             if (event.key === 'Enter') {
@@ -68,7 +74,11 @@ const SearchPage = () => {
                             <div className='search-container  flex justify-center'>
                                 {searchTerm ? (
                                     <>
-                                        <input className='search-input reverse-icon rounded-full '
+                                        <span className='absolute z-10 left-2 h-full px-4 flex items-center'
+                                        >
+                                            <img src={arrow} width={30} alt="" onClick={handleErase} />
+                                        </span>
+                                        <input className='search-input  rounded-full '
                                             type="text" name="search"
                                             placeholder="Type your medicine name here"
                                             onChange={handleChange}
@@ -77,12 +87,12 @@ const SearchPage = () => {
                                     </>
                                 ) : (
                                     <>
-                                        <input className='search-input search-icon rounded-full' 
-                                        type="text" name="search"
-                                        placeholder="Type your medicine name here"
-                                        onChange={handleChange}
+                                        <input className='search-input search-icon rounded-full'
+                                            type="text" name="search"
+                                            placeholder="Type your medicine name here"
+                                            onChange={handleChange}
                                         />
-                                        
+
                                         <button className='search-text' onClick={handleSearch}>Search</button>
                                     </>
                                 )}
