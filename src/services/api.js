@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosApi =axios.create({
-    baseURL:'https://backend.cappsule.co.in/', withCredentials:true
+    baseURL:import.meta.env.VITE_BASE_URL, withCredentials:true
 })
 
 export {axiosApi}
