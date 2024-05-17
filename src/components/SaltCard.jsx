@@ -16,10 +16,11 @@ const SaltCard = ({ saltSuggetion }) => {
         if (hasFormEntries) {
           const firstForm = Object.keys(saltFormsJson)[0];
           const firstStrength = Object.keys(saltFormsJson[firstForm])[0];
+          const firstPacking =Object.keys(saltFormsJson[firstForm][firstStrength])[0]
           acc[index] = {
             selectedForm: firstForm,
             selectedStrength: firstStrength,
-            selectedPacking: null,
+            selectedPacking: firstPacking,
           };
         } else {
           acc[index] = {
@@ -148,7 +149,7 @@ const SaltCard = ({ saltSuggetion }) => {
                         <React.Fragment key={strength}>
                           {(strengthIndex < 4 || isShowMore(index, 'strength')) ? (
                             <button
-                              className={`strength-button border rounded-md px-2 overflow-hidden whitespace-nowrap text-ellipsis ${isOptionAvailable(packings) ? 'border-[#112D31]' : ''
+                              className={`strength-button border rounded-md px-2 h-7  overflow-hidden whitespace-nowrap text-ellipsis ${isOptionAvailable(packings) ? 'border-[#112D31]' : ''
                                 } ${selectedOptions[index]?.selectedStrength === strength
                                   ? 'border-2 border-[#112D31] shadow-[0_0_10px_rgba(17,45,49,0.5)]'
                                   : ''
@@ -226,7 +227,7 @@ const SaltCard = ({ saltSuggetion }) => {
             <div className="flex flex-col justify-center">
               <h4 className="font-bold">{item.salt}</h4>
               <p className="text-[#2A527A] overflow-hidden whitespace-nowrap text-ellipsis">
-                {selectedOptions[index]?.selectedForm } | {selectedOptions[index]?.selectedStrength} |{selectedOptions[index]?.selectedPacking}
+                {selectedOptions[index]?.selectedForm} | {selectedOptions[index]?.selectedStrength} |{selectedOptions[index]?.selectedPacking}
               </p>
             </div>
 
